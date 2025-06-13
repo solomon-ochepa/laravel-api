@@ -10,9 +10,9 @@ class UpdateUserRequest extends FormRequest
 {
     public User $user;
 
-    public function __construct(?User $user = null)
+    public function __construct()
     {
-        $this->user = $user ?? request()->route('user');
+        $this->user = (request('user') instanceof (new User)) ? request('user') : User::find(request('user'));
     }
 
     /**
@@ -24,9 +24,9 @@ class UpdateUserRequest extends FormRequest
             'first_name' => ['sometimes', 'required', 'string', 'max:32'],
             'last_name' => ['sometimes', 'required', 'string', 'max:32'],
             'other_name' => ['sometimes', 'nullable', 'string', 'max:32'],
-            'username' => ['sometimes', 'nullable', 'string', 'unique:users,username,'.($this->user->id).',id'],
-            'phone' => ['sometimes', 'required', 'string', 'unique:users,phone,'.($this->user->id).',id'],
-            'email' => ['sometimes', 'nullable', 'email', 'unique:users,email,'.($this->user->id).',id'],
+            'username' => ['sometimes', 'nullable', 'string', "unique:users,username,{$this->user->id}"],
+            'phone' => ['sometimes', 'required', 'string', "unique:users,phone,{$this->user->id}"],
+            'email' => ['sometimes', 'nullable', 'email', "unique:users,email,{$this->user->id}"],
             'password' => ['sometimes', 'required', 'string', 'min:8', 'confirmed'],
         ];
     }
