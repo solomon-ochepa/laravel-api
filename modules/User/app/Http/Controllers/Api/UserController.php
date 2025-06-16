@@ -4,6 +4,7 @@ namespace Modules\User\App\Http\Controllers\Api;
 
 use App\Helpers\JSend;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Log;
 use Modules\User\App\Http\Requests\CreateUserRequest;
@@ -17,10 +18,10 @@ class UserController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(): JsonResponse
+    public function index(Request $request): JsonResponse
     {
         try {
-            return JSend::success(['users' => new UserCollection(User::paginate(100))]);
+            return JSend::success(['users' => new UserCollection(User::paginate($request->limit ?? 100))]);
         } catch (Throwable $th) {
             Log::error('Unable to retrieve users.', [
                 'message' => $th->getMessage(),
