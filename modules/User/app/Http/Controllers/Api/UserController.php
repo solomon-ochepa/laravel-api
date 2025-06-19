@@ -40,7 +40,17 @@ class UserController extends Controller
      */
     public function store(CreateUserRequest $request): JsonResponse
     {
-        return JSend::success([]);
+        try {
+            return JSend::success(['user' => new UserResource(User::create($request->validated()))]);
+        } catch (Throwable $th) {
+            Log::error('Cannot create a new user.', [
+                'message' => $th->getMessage(),
+                'request' => $request,
+                'exception' => $th,
+            ]);
+
+            return JSend::error($th->getMessage());
+        }
     }
 
     /**
