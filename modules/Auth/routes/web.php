@@ -1,4 +1,5 @@
 <?php
 
-require 'auth.php';
-require 'passport.php';
+use Illuminate\Support\Facades\Route;
+
+Route::middleware(['auth', 'verified'])->group(function () {});
