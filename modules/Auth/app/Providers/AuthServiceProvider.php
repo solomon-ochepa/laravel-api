@@ -2,10 +2,8 @@
 
 namespace Modules\Auth\App\Providers;
 
-use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
-use Laravel\Passport\Passport;
 use Nwidart\Modules\Traits\PathNamespace;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
@@ -29,17 +27,6 @@ class AuthServiceProvider extends ServiceProvider
         $this->registerConfig();
         $this->registerViews();
         $this->loadMigrationsFrom(module_path($this->name, 'database/migrations'));
-
-        /*
-         * Once enabled, all of your client secrets will only be displayable to the user immediately after they are created.
-         * Since the plain-text client secret value is never stored in the database, it is not possible to recover the secret's value if it is lost.
-         */
-        // Passport::hashClientSecrets();
-        Passport::tokensExpireIn(now()->addMonth());
-        Passport::personalAccessTokensExpireIn(now()->addMonth());
-        Passport::refreshTokensExpireIn(now()->addMonth());
-
-        JsonResource::withoutWrapping();
     }
 
     /**
