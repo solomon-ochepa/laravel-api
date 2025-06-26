@@ -1,8 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Modules\User\App\Http\Controllers\UserController;
+use Modules\User\App\Http\Controllers\Api\UserController;
 
-Route::middleware(['auth:api'])->prefix('v1')->group(function () {
-    Route::get('users', [UserController::class, 'index'])->name('user.index');
+Route::prefix('v1')->group(function () {
+    Route::apiResource('users', UserController::class)->names('users');
 });

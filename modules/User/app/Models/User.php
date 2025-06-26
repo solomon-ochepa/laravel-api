@@ -12,6 +12,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Passport\Contracts\OAuthenticatable;
 use Laravel\Passport\HasApiTokens;
+use Modules\User\Database\Factories\UserFactory;
 
 class User extends Authenticatable implements OAuthenticatable
 {
@@ -51,6 +52,11 @@ class User extends Authenticatable implements OAuthenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    protected static function newFactory()
+    {
+        return UserFactory::new();
     }
 
     public function name(): Attribute
