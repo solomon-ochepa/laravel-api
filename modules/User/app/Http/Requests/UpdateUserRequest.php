@@ -8,9 +8,7 @@ use Modules\User\App\Models\User;
 
 class UpdateUserRequest extends FormRequest
 {
-
-    public function __construct()
-    {}
+    public function __construct() {}
 
     /**
      * Get the validation rules that apply to the request.
