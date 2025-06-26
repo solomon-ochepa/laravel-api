@@ -45,10 +45,14 @@ class UserController extends Controller
     /**
      * Show the specified resource.
      */
-    public function show(User $user): JsonResponse
+    public function show(string $user_id): JsonResponse
     {
         try {
+            $user = User::findOrFail($user_id);
+
             return JSend::success(['user' => new UserResource($user)]);
+        } catch (ModelNotFoundException $e) {
+            return JSend::fail(['message' => 'User not found']);
         } catch (Throwable $th) {
             Log::error('Unable to retrieve user.', [
                 'message' => $th->getMessage(),
@@ -70,7 +74,7 @@ class UserController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy($user_id): JsonResponse
+    public function destroy(string $user_id): JsonResponse
     {
         try {
             $user = User::findOrFail($user_id);

@@ -66,6 +66,19 @@ it('returns a specific user in JSend format', function () {
     expect($response->json('data.user.id'))->toBe($user->id);
 });
 
+it('returns error 404 when trying to get non-existent user', function () {
+    $fake_user_id = 419;
+
+    $response = $this->getJson("/api/v1/users/{$fake_user_id}");
+    $response->assertNotFound()
+        ->assertJson([
+            'status' => 'fail',
+            'data' => [
+                'message' => 'User not found',
+            ],
+        ]);
+});
+
 it('deletes a user successfully', function () {
     $user = User::factory()->create();
 
@@ -82,10 +95,10 @@ it('deletes a user successfully', function () {
     $this->assertSoftDeleted('users', ['id' => $user->id]);
 });
 
-it('returns 404 when trying to delete non-existent user', function () {
-    $nonExistentId = 99999;
+it('returns error 404 when trying to delete non-existent user', function () {
+    $fake_user_id = 419;
 
-    $response = $this->deleteJson("/api/v1/users/{$nonExistentId}");
+    $response = $this->deleteJson("/api/v1/users/{$fake_user_id}");
     $response->assertNotFound()
         ->assertJson([
             'status' => 'fail',
