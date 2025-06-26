@@ -22,21 +22,21 @@ class JSend
         ]);
     }
 
-    public static function error(string $message, ?int $code = null, ?array $data = null)
+    public static function error(string $message, ?int $status_code = null, ?array $data = null)
     {
         $_data = [];
         $_data['status'] = 'error';
         $_data['message'] = $message;
         $_data ? $_data['data'] = $data : null;
 
-        return response()->json($_data, $code);
+        return response()->json($_data, $status_code);
     }
 
-    public static function fail(array $data)
+    public static function fail(array $data, $status_code = 404)
     {
         return response()->json([
             'status' => 'fail',
             'data' => $data,
-        ]);
+        ], $status_code);
     }
 }

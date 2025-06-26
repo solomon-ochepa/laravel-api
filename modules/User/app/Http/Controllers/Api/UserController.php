@@ -3,6 +3,7 @@
 namespace Modules\User\App\Http\Controllers\Api;
 
 use App\Helpers\JSend;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
@@ -69,16 +70,19 @@ class UserController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(User $user): JsonResponse
+    public function destroy($user_id): JsonResponse
     {
         try {
+            $user = User::findOrFail($user_id);
             $user->delete();
 
             return JSend::success([
-                'message' => 'User deleted successfully.',
+                'message' => 'User deleted successfully',
             ]);
-        } catch (\Throwable $th) {
-            Log::error("Could not delete user - {$user->id}");
+        } catch (ModelNotFoundException $e) {
+            return JSend::fail(['message' => 'User not found']);
+        } catch (\Throwable $e) {
+            Log::error("Could not delete user - {$user_id}");
 
             return JSend::error('Could not delete user');
         }
