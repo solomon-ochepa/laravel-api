@@ -2,8 +2,8 @@
 
 use Modules\User\App\Models\User;
 
-it('returns a paginated list of users in JSend format', function () {
-    User::factory()->count(5)->create();
+it('returns a list of users in JSend format', function () {
+    User::factory(5)->create();
 
     $response = $this->getJson('/api/v1/users');
     $response->assertOk()
@@ -33,4 +33,35 @@ it('returns a paginated list of users in JSend format', function () {
 
     // Assert: users are present in the response
     expect($response->json('data.users.0'))->toHaveCount(11);
+});
+
+it('returns a specific user in JSend format', function () {
+    $user = User::factory()->create();
+
+    $response = $this->getJson("/api/v1/users/{$user->id}");
+    $response->assertOk()
+        ->assertJsonStructure([
+            'status',
+            'data' => [
+                'user' => [
+                    'id',
+                    'first_name',
+                    'other_name',
+                    'last_name',
+                    'username',
+                    'phone',
+                    'email',
+                    'email_verified_at',
+                    'created_at',
+                    'updated_at',
+                    'deleted_at',
+                ],
+            ],
+        ])
+        ->assertJson([
+            'status' => 'success',
+        ]);
+
+    // Assert: user `id` is present in the response
+    expect($response->json('data.user.id'))->toBe($user->id);
 });
