@@ -11,6 +11,7 @@ use Modules\User\App\Http\Requests\CreateUserRequest;
 use Modules\User\App\Http\Requests\UpdateUserRequest;
 use Modules\User\App\Models\User;
 use Modules\User\App\Resources\UserCollection;
+use Modules\User\App\Resources\UserResource;
 use Throwable;
 
 class UserController extends Controller
@@ -45,7 +46,16 @@ class UserController extends Controller
      */
     public function show(User $user): JsonResponse
     {
-        return JSend::success([]);
+        try {
+            return JSend::success(['user' => new UserResource($user)]);
+        } catch (Throwable $th) {
+            Log::error('Unable to retrieve user.', [
+                'message' => $th->getMessage(),
+                'exception' => $th,
+            ]);
+
+            return JSend::error($th->getMessage());
+        }
     }
 
     /**
