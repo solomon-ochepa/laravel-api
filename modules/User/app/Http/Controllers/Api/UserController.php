@@ -71,6 +71,16 @@ class UserController extends Controller
      */
     public function destroy(User $user): JsonResponse
     {
-        return JSend::success([]);
+        try {
+            $user->delete();
+
+            return JSend::success([
+                'message' => 'User deleted successfully.',
+            ]);
+        } catch (\Throwable $th) {
+            Log::error("Could not delete user - {$user->id}");
+
+            return JSend::error('Could not delete user');
+        }
     }
 }
