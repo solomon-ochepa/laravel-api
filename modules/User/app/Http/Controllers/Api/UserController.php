@@ -66,20 +66,20 @@ class UserController extends Controller
         return JSend::success([]);
     }
 
-   /**
+    /**
      * Remove the specified resource from storage.
      */
     public function destroy(User $user): JsonResponse
     {
         try {
             $user->delete();
- 
+
             return JSend::success([
                 'message' => 'User deleted successfully.',
             ]);
         } catch (\Throwable $th) {
             Log::error("Could not delete user - {$user->id}");
- 
+
             return JSend::error('Could not delete user');
         }
     }
