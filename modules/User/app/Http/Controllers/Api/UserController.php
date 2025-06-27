@@ -80,13 +80,11 @@ class UserController extends Controller
             $user = User::findOrFail($user_id);
             $user->delete();
 
-            return JSend::success([
-                'message' => 'User deleted successfully',
-            ]);
+            return JSend::success(['message' => 'User deleted successfully']);
         } catch (ModelNotFoundException $e) {
             return JSend::fail(['message' => 'User not found']);
         } catch (\Throwable $e) {
-            Log::error("Could not delete user - {$user_id}");
+            Log::error("Could not delete user - {$user_id}", ['exception' => $e->getMessage()]);
 
             return JSend::error('Could not delete user');
         }
