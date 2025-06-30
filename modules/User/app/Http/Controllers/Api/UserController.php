@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Log;
 use Modules\User\App\Http\Requests\CreateUserRequest;
 use Modules\User\App\Http\Requests\UpdateUserRequest;
 use Modules\User\App\Models\User;
+use Modules\User\App\Repositories\UserRepository;
 use Modules\User\App\Resources\UserCollection;
 use Modules\User\App\Resources\UserResource;
 use Throwable;
@@ -74,17 +75,17 @@ class UserController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $user_id): JsonResponse
+    public function destroy(string $id): JsonResponse
     {
         try {
-            $user = User::findOrFail($user_id);
+            $user = (new UserRepository)->find($id);
             $user->delete();
 
             return JSend::success(['message' => 'User deleted successfully']);
         } catch (ModelNotFoundException $e) {
             return JSend::fail(['message' => 'User not found']);
         } catch (\Throwable $e) {
-            Log::error("Could not delete user - {$user_id}", ['exception' => $e->getMessage()]);
+            Log::error("Could not delete user - {$id}", ['exception' => $e->getMessage()]);
 
             return JSend::error('Could not delete user');
         }
