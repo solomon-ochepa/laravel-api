@@ -9,10 +9,7 @@ class JSend
     /**
      * Create a new class instance.
      */
-    public function __construct()
-    {
-        $this->data = [];
-    }
+    public function __construct() {}
 
     public static function success(array $data)
     {
@@ -22,7 +19,7 @@ class JSend
         ]);
     }
 
-    public static function error(string $message, ?int $status_code = null, ?array $data = null)
+    public static function error(string $message, int $status_code = 500, ?array $data = null)
     {
         $_data = [];
         $_data['status'] = 'error';
