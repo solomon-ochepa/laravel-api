@@ -3,7 +3,6 @@
 namespace Modules\User\Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Arr;
 use Modules\User\App\Models\User;
 
 class UserSeeder extends Seeder
@@ -34,7 +33,14 @@ class UserSeeder extends Seeder
         ];
 
         foreach ($users as $user) {
-            User::firstOrCreate(Arr::only($user, ['username', 'phone', 'email']), $user);
+            $existing = User::withTrashed()->where('username', $user['username'])
+                ->orWhere('phone', $user['phone'])
+                ->orWhere('email', $user['email'])->exists();
+            if ($existing) {
+                continue; // Skip creating a user that already exists in the database
+            }
+
+            User::create($user);
         }
     }
 }
