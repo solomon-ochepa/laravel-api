@@ -90,4 +90,25 @@ class UserController extends Controller
             return JSend::error('Could not delete user');
         }
     }
+
+    public function force_delete(mixed $id): JsonResponse
+    {
+        try {
+            $user = User::onlyTrashed()
+                ->where('id', $id)
+                ->orWhere('email', $id)
+                ->orWhere('username', $id)
+                ->firstOrFail();
+
+            $user->forceDelete();
+
+            return JSend::success(['message' => 'User deleted permanently']);
+        } catch (ModelNotFoundException $e) {
+            return JSend::fail(['message' => 'User not found']);
+        } catch (\Throwable $th) {
+            Log::error("Could not permanently delete user - {$id}", ['exception' => $th->getMessage()]);
+
+            return JSend::error('Could not permanently delete user');
+        }
+    }
 }
