@@ -24,8 +24,8 @@ Homestead.yaml
 Thumbs.db
 # Extra
 .rnd
-*copy.*
-*copy
+* copy.*
+* copy
 **/*.zip
 **/temp/
 **/tmp/
