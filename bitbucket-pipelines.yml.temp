@@ -1,0 +1,36 @@
+image: mburton3969/pipeline:latest
+
+options:
+  docker: true
+
+pipelines:
+  pull-requests:
+    '**':
+      - parallel:
+          - step:
+              name: Code Style Validation
+              caches:
+                - docker
+              script:
+                # Build
+                - if [ -z "$ENCRYPTED_DEV_ENV_FILE" ]; then echo "Error - ENCRYPTED_DEV_ENV_FILE is not set or empty"; exit 1; fi
+                - echo "$ENCRYPTED_DEV_ENV_FILE" | base64 -d > .env
+                - echo "REPO_BRANCH=$BITBUCKET_BRANCH" >> .env
+                - source .env # Ensure the updated .env file is sourced
+                - docker build -t $DOCKER_USERNAME/ia_api:latest --build-arg APP_ENV=dev . || { echo "Docker build failed"; exit 1; }
+                # Command(s)
+                - docker run --rm $DOCKER_USERNAME/ia_api:latest pint --test
+
+          - step:
+              name: PHP Unit Tests
+              caches:
+                - docker # This line enables Docker layer caching
+              script:
+                # Build
+                - if [ -z "$ENCRYPTED_DEV_ENV_FILE" ]; then echo "Error - ENCRYPTED_DEV_ENV_FILE is not set or empty"; exit 1; fi
+                - echo "$ENCRYPTED_DEV_ENV_FILE" | base64 -d > .env
+                - echo "REPO_BRANCH=$BITBUCKET_BRANCH" >> .env
+                - source .env # Ensure the updated .env file is sourced
+                - docker build -t $DOCKER_USERNAME/ia_api:latest --build-arg APP_ENV=dev . || { echo "Docker build failed"; exit 1; }
+                # Command(s)
+                - docker run --rm $DOCKER_USERNAME/ia_api:latest php artisan test

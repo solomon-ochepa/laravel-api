@@ -1,0 +1,52 @@
+# Note: Run `docker build -t php-nodejs:8.3 -f Dockerfile.php-nodejs .` to build the image
+
+# Base Image
+FROM php:8.3-apache AS base
+
+# This helps keep our Dockerfiles DRY -> https://bit.ly/dry-code
+# You can see a list of required extensions for Laravel here: https://laravel.com/docs/11.x/deployment#server-requirements
+
+# Define the build arguments with default values
+ARG PHPIZE_DEPS="libpng-dev libjpeg-dev libfreetype6-dev libzip-dev vim git zip unzip jq libssl-dev libicu-dev nodejs npm supervisor"
+ARG PHP_EXTS="pdo pdo_mysql mysqli zip"
+ARG PHP_PECL_EXTS=""
+
+# Install System Dependencies & PHP Extensions
+RUN apt-get update && apt-get install -y --no-install-recommends ${PHPIZE_DEPS} ca-certificates
+RUN docker-php-ext-configure gd --with-freetype --with-jpeg && \
+    docker-php-ext-configure intl
+RUN if [ -n "$PHP_EXTS" ]; then \
+        docker-php-ext-install -j$(nproc) ${PHP_EXTS}; \
+    fi
+RUN if [ -n "$PHP_PECL_EXTS" ]; then \
+        pecl install ${PHP_PECL_EXTS} && docker-php-ext-enable ${PHP_PECL_EXTS}; \
+    fi
+
+# Set Environment Variables
+ENV PATH="${PATH}:/var/www/html/vendor/bin" \
+    COMPOSER_ALLOW_SUPERUSER=1 \
+    APACHE_DOCUMENT_ROOT=/var/www/html/public
+
+# --------------------------------------------
+# Apache Config & Permissions
+# --------------------------------------------
+RUN a2enmod rewrite && \
+    chown -R www-data:www-data /var/www && \
+    chmod -R 775 /var/www && \
+    sed -i "s|DocumentRoot /var/www/html|DocumentRoot ${APACHE_DOCUMENT_ROOT}|g" /etc/apache2/sites-available/000-default.conf && \
+    echo "<Directory ${APACHE_DOCUMENT_ROOT}>\n\tAllowOverride All\n</Directory>" > /etc/apache2/conf-available/laravel.conf && \
+    a2enconf laravel
+
+# Set Working Directory
+WORKDIR /var/www/html/
+
+# Install Composer (PHP package manager)
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+# Install Node.js (includes npm)
+RUN curl -fsSL https://deb.nodesource.com/setup_current.x | bash - && \
+    npm install -g vite && \
+    npm cache clean --force
+
+# Clean up apt cache to reduce image size
+RUN apt-get clean && rm -rf /var/lib/apt/lists/*
