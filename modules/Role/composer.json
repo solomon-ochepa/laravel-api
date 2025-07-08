@@ -1,0 +1,29 @@
+{
+    "name": "elisha-mustapha/role",
+    "description": "",
+    "authors": [
+        {
+            "name": "Elisha Mustapha",
+            "email": "mustygambo1999@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [],
+            "aliases": {}
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\Role\\App\\": "app/",
+            "Modules\\Role\\app\\Livewire\\": "app/Livewire/",
+            "Modules\\Role\\Database\\Factories\\": "database/factories/",
+            "Modules\\Role\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Modules\\Role\\Tests\\": "tests/"
+        }
+    }
+}
