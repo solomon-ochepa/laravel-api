@@ -12,9 +12,11 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('roles', function (Blueprint $table) {
-            if (! Schema::hasColumn($table->getTable(), 'deleted_at')) {
-                $table->softDeletes();
-            }
+            $table->uuid('id')->primary();
+            $table->string('name');
+            $table->string('guard_name');
+            $table->timestamps();
+            $table->softDeletes();
         });
     }
 
@@ -23,10 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('roles', function (Blueprint $table) {
-            if (Schema::hasColumn($table->getTable(), 'deleted_at')) {
-                $table->dropSoftDeletes();
-            }
-        });
+        Schema::dropIfExists('roles');
     }
 };
