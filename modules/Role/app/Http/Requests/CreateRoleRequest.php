@@ -3,6 +3,7 @@
 namespace Modules\Role\App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Auth;
 
 class CreateRoleRequest extends FormRequest
 {
@@ -13,6 +14,7 @@ class CreateRoleRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string', 'min:3', 'max:16', 'unique:roles,name'],
+            'guard_name' => ['nullable', 'string', 'in:web,api]'],
         ];
     }
 
@@ -21,6 +23,6 @@ class CreateRoleRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return true;
+        return Auth::user()->can('roles.create');
     }
 }
