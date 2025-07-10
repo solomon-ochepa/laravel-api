@@ -46,10 +46,10 @@ class UserController extends Controller
     /**
      * Show the specified resource.
      */
-    public function show(string $user_id): JsonResponse
+    public function show(mixed $id): JsonResponse
     {
         try {
-            $user = User::findOrFail($user_id);
+            $user = (new UserRepository)->find($id);
 
             return JSend::success(['user' => new UserResource($user)]);
         } catch (ModelNotFoundException $e) {
@@ -109,6 +109,30 @@ class UserController extends Controller
             Log::error("Could not permanently delete user - {$id}", ['exception' => $th->getMessage()]);
 
             return JSend::error('Could not permanently delete user');
+        }
+    }
+
+    public function restore($id)
+    {
+        try {
+            $user = User::onlyTrashed()
+                ->where('id', $id)
+                ->orWhere('username', $id)
+                ->orWhere('phone', $id)
+                ->orWhere('email', $id)
+                ->firstOrFail();
+
+            $user->restore();
+
+            return JSend::success(['message' => 'User restored successfully']);
+        } catch (ModelNotFoundException $e) {
+            return JSend::fail(['message' => 'User not found']);
+        } catch (Throwable $th) {
+            Log::error('Could not restore user', [
+                'message' => $th->getMessage(),
+            ]);
+
+            return JSend::error('Could not restore user');
         }
     }
 }
