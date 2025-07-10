@@ -5,6 +5,7 @@ namespace Modules\User\App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 use Modules\User\App\Models\User;
+use Modules\User\App\Repositories\UserRepository;
 
 class UpdateUserRequest extends FormRequest
 {
@@ -12,7 +13,7 @@ class UpdateUserRequest extends FormRequest
 
     public function __construct()
     {
-        $this->user = (request('user') instanceof (new User)) ? request('user') : User::find(request('user'));
+        $this->user = (request('user') instanceof (new User)) ? request('user') : (new UserRepository)->find(request('user'));
     }
 
     /**
