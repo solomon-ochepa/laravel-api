@@ -77,9 +77,26 @@ class UserController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateUserRequest $request, User $user): JsonResponse
+    public function update(UpdateUserRequest $request, mixed $id): JsonResponse
     {
-        return JSend::success([]);
+        try {
+            $user = (new UserRepository)->find($id);
+            $user->fill($request->validated());
+
+            // Update the user
+            $user->update();
+
+            return JSend::success(['user' => new UserResource($user)]);
+        } catch (ModelNotFoundException $e) {
+            return JSend::fail(['message' => 'User not found']);
+        } catch (Exception $e) {
+            Log::error("User not found: {$id}", [
+                'request_data' => $request->all(),
+                'exception' => $e->getMessage(),
+            ]);
+
+            return JSend::error('Failed to update user', 503, ['error' => $e->getMessage()]);
+        }
     }
 
     /**
