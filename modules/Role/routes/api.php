@@ -1,8 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Modules\Role\App\Http\Controllers\RoleController;
+use Modules\Role\App\Http\Controllers\Api\RoleController;
 
-Route::middleware(['auth:api'])->prefix('v1')->group(function () {
-    Route::get('roles', [RoleController::class, 'index'])->name('role.index');
+Route::prefix('v1')->group(function () {
+    Route::apiResource('roles', RoleController::class);
 });

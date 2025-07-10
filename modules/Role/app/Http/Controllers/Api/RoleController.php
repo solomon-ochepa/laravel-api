@@ -1,9 +1,12 @@
 <?php
 
-namespace Modules\Role\App\Http\Controllers;
+namespace Modules\Role\App\Http\Controllers\Api;
 
+use App\Helpers\JSend;
 use App\Http\Controllers\Controller;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
+use Modules\Role\App\Repositories\RoleRepository;
 
 class RoleController extends Controller
 {
@@ -28,7 +31,18 @@ class RoleController extends Controller
     /**
      * Show the specified resource.
      */
-    public function show($id) {}
+    public function show(mixed $id)
+    {
+        try {
+            $role = (new RoleRepository)->find($id);
+
+            return JSend::success(['role' => $role]);
+        } catch (ModelNotFoundException $e) {
+            return JSend::fail(['message' => 'Role not found']);
+        } catch (\Exception $e) {
+            return JSend::error('Server error');
+        }
+    }
 
     /**
      * Show the form for editing the specified resource.
