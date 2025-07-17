@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Modules\Role\App\Repositories\RoleRepository;
+use Nwidart\Modules\Exceptions\ModuleNotFoundException;
 
 class RoleController extends Controller
 {
@@ -57,5 +58,17 @@ class RoleController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy($id) {}
+    public function destroy($id) {
+        try{
+
+            $role = (new RoleRepository)->find($id);
+            $role->delete();
+
+            return JSend::success(['message' => 'Role deleted successfully']);
+        } catch(ModuleNotFoundException){
+            return JSend::fail(['message' => "Role not Found"]);
+        }catch(\Throwable $e){
+            return JSend::error('Server Error: Fail to delete role');
+        }
+    }
 }
