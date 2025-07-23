@@ -30,7 +30,7 @@ class User extends Authenticatable implements OAuthenticatable
         'username',
         'phone',
         'email',
-        'password',
+        // 'password',
     ];
 
     /**
