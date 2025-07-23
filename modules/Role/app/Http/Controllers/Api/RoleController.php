@@ -59,16 +59,16 @@ class RoleController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Role $role) {
+    public function destroy(mixed $id) {
         try{
-
+            $role = (new RoleRepository)->find($id);
             $role->delete();
-
+            
             return JSend::success(['message' => 'Record deleted successfully']);
         } catch(ModuleNotFoundException){
             return JSend::fail(['message' => "Record not Found"]);
         }catch(\Throwable $e){
-            return JSend::error('Server Error: Fail to delete role');
+            return JSend::error('Could not delete record');
         }
     }
 }
