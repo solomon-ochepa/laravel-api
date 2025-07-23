@@ -3,5 +3,6 @@
     "Auth": true,
     "Role": true,
     "Permission": true,
-    "Feature": true
+    "Feature": true,
+    "OAuth": true
 }
