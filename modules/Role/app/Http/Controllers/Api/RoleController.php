@@ -62,12 +62,11 @@ class RoleController extends Controller
     public function destroy(Role $role) {
         try{
 
-            
             $role->delete();
 
-            return JSend::success(['message' => "Role '{$role->name}' deleted successfully"]);
+            return JSend::success(['message' => 'Record deleted successfully']);
         } catch(ModuleNotFoundException){
-            return JSend::fail(['message' => "Role not Found"]);
+            return JSend::fail(['message' => "Record not Found"]);
         }catch(\Throwable $e){
             return JSend::error('Server Error: Fail to delete role');
         }
