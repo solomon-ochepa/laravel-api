@@ -1,8 +1,7 @@
 {
     "User": true,
-    "Auth": true,
-    "Role": true,
+    "OAuth": true,
     "Permission": true,
-    "Feature": true,
-    "OAuth": true
+    "Role": true,
+    "Feature": true
 }
