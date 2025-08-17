@@ -1,0 +1,29 @@
+{
+    "name": "solomon-ochepa/oauth",
+    "description": "",
+    "authors": [
+        {
+            "name": "Solomon Ochepa",
+            "email": "solomonochepa@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [],
+            "aliases": {}
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\OAuth\\App\\": "app/",
+            "Modules\\OAuth\\app\\Livewire\\": "app/Livewire/",
+            "Modules\\OAuth\\Database\\Factories\\": "database/factories/",
+            "Modules\\OAuth\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Modules\\OAuth\\Tests\\": "tests/"
+        }
+    }
+}

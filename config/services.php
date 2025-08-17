@@ -35,4 +35,12 @@ return [
         ],
     ],
 
+    'users' => [
+        'client_id' => env('USERS_CLIENT_ID'),
+        'client_secret' => env('USERS_CLIENT_SECRET'),
+        'api_uri' => env('USERS_API_URI'),
+        'auth_uri' => env('USERS_AUTH_URI'),
+        'callback_uri' => env('USERS_CALLBACK_URI'),
+    ],
+
 ];

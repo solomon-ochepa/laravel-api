@@ -1,6 +1,6 @@
 <?php
 
-namespace Modules\Auth\App\Providers;
+namespace Modules\OAuth\App\Providers;
 
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
@@ -8,13 +8,13 @@ use Nwidart\Modules\Traits\PathNamespace;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 
-class AuthServiceProvider extends ServiceProvider
+class OAuthServiceProvider extends ServiceProvider
 {
     use PathNamespace;
 
-    protected string $name = 'Auth';
+    protected string $name = 'OAuth';
 
-    protected string $nameLower = 'auth';
+    protected string $nameLower = 'oauth';
 
     /**
      * Boot the application events.
