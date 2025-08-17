@@ -10,7 +10,6 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Modules\OAuth\App\Models\Client;
-use Modules\Role\App\Models\Role;
 use Modules\User\App\Gateways\UsersGateway;
 use Modules\User\App\Models\User;
 
@@ -18,10 +17,16 @@ class OAuthController extends Controller
 {
     public Client $client;
 
+    public function __construct(Request $request)
+    {
+        $this->client = new Client;
+        // dd($request->all());
+    }
+
     /**
      * Authorization code
      */
-    public function oauth(Request $request)
+    public function redirect(Request $request)
     {
         $users = config('services.users');
 
@@ -87,7 +92,7 @@ class OAuthController extends Controller
             return $this->store();
         }
 
-        return redirect(route('login'))->with('status', 'Login failed');
+        return redirect(route('oauth.redirect'))->with('status', 'Login failed');
     }
 
     /**
@@ -98,7 +103,7 @@ class OAuthController extends Controller
         // Get user profile
         $request = (new UsersGateway)->user();
         if ($request['status'] === 'error') {
-            return redirect(route('home'))->with('error', 'Login failed: '.$request['message']);
+            return redirect(route('oauth.redirect'))->with('error', 'Login failed: '.$request['message']);
         }
 
         $data = $request['data'];
@@ -133,16 +138,11 @@ class OAuthController extends Controller
             Log::info($e->getMessage());
         }
 
-        /*
-         * Roles & Permissions
-         */
-        $user->assignRole(Role::findOrCreate('user'));
-
         // Login user
         Auth::login($user, true);
 
         // Dashboard
-        return redirect(route('dashboard'))->with('status', 'Login successfully!');
+        // return redirect(route('dashboard'))->with('status', 'Login successfully!');
     }
 
     protected function refresh()
