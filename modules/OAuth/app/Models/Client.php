@@ -5,8 +5,6 @@ namespace Modules\OAuth\App\Models;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 
-// use Modules\OAuth\Database\Factories\ClientFactory;
-
 class Client extends Model
 {
     use HasUuids;
