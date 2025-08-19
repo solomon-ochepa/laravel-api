@@ -2,12 +2,14 @@
 
 namespace Modules\OAuth\App\Models;
 
-use Illuminate\Database\Eloquent\Concerns\HasUuids;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;
+use Illuminate\Foundation\Auth\Access\Authorizable;
+use Laravel\Passport\Client as BaseClient;
+use Spatie\Permission\Traits\HasRoles;
 
-class Client extends Model
+class Client extends BaseClient implements AuthorizableContract
 {
-    use HasUuids;
+    use Authorizable, HasRoles;
 
     /**
      * The attributes that are mass assignable.
@@ -24,4 +26,9 @@ class Client extends Model
     ];
 
     public $table = 'oauth_clients';
+
+    public function guardName()
+    {
+        return 'api';
+    }
 }

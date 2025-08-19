@@ -4,6 +4,8 @@ namespace Modules\OAuth\App\Providers;
 
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
+use Laravel\Passport\Passport;
+use Modules\OAuth\App\Models\Client;
 use Nwidart\Modules\Traits\PathNamespace;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
@@ -21,6 +23,11 @@ class OAuthServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Overriding Default Passport Models
+        Passport::useClientModel(Client::class);
+        // Passport::ignoreRoutes();
+        Passport::authorizationView('oauth::authorize');
+
         $this->registerCommands();
         $this->registerCommandSchedules();
         $this->registerTranslations();
@@ -129,8 +136,8 @@ class OAuthServiceProvider extends ServiceProvider
 
         $this->loadViewsFrom(array_merge($this->getPublishableViewPaths(), [$sourcePath]), $this->nameLower);
 
-        $componentNamespace = $this->module_namespace($this->name, $this->app_path(config('modules.paths.generator.component-class.path')));
-        Blade::componentNamespace($componentNamespace, $this->nameLower);
+        $namespace = $this->module_namespace($this->name, $this->app_path(config('modules.paths.generator.component-class.path')));
+        Blade::componentNamespace($namespace, $this->nameLower);
     }
 
     /**
