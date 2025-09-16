@@ -23,7 +23,7 @@ RUN php -r "file_exists('php.ini') && copy('php.ini', '/usr/local/etc/php/php.in
 ################################
 # Install PHP & JS Dependencies
 RUN composer install --optimize-autoloader --ignore-platform-reqs && \
-    npm install && npm run build
+    pnpm install && pnpm run build
 
 ################################
 # Path Permissions
