@@ -1,0 +1,23 @@
+image: mburton3969/pipeline:latest
+
+options:
+  docker: true
+
+pipelines:
+  pull-requests:
+    '**':
+      - parallel:
+          - step:
+              name: Code Tests
+              caches:
+                - docker # This line enables Docker layer caching
+              script:
+                # Build
+                - echo "$ENCRYPTED_DEV_ENV_FILE" | base64 -d > .env
+                - source .env # Ensure the updated .env file is sourced
+                - docker build -f docker/Dockerfile -t laravel_api:test --build-arg APP_ENV=dev .
+                # Command(s)
+                # Run Pint
+                - docker run --rm laravel_api:test pint --test
+                # Run Tests - Todo: add  "--profanity --shard=4/4"
+                - docker run --rm laravel_api:test pest --parallel --no-coverage
