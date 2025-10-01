@@ -1,11 +1,12 @@
 services:
-  app:
+  laravel.test:
     build:
       context: .
-      dockerfile: Dockerfile.local
+      dockerfile: docker/Dockerfile.local
       args:
         WWWGROUP: '${WWWGROUP:-1000}'
-    container_name: ia_api_app
+    image: laravel_api
+    container_name: laravel_api-laravel.test
     extra_hosts:
       - 'host.docker.internal:host-gateway'
       - 'localhost.test:host-gateway'
@@ -22,8 +23,9 @@ services:
     restart: always
 
   mysql:
-    image: mysql
-    container_name: ia_api_mysql
+    image: mysql:8.0
+    command: --skip-log-bin
+    container_name: laravel_api-mysql
     ports:
       - '${FORWARD_DB_PORT:-3306}:3306'
     environment:
@@ -35,6 +37,7 @@ services:
       MYSQL_ALLOW_EMPTY_PASSWORD: 1
     volumes:
       - 'mysql:/var/lib/mysql'
+      # - './vendor/laravel/sail/database/mysql/create-testing-database.sh:/docker-entrypoint-initdb.d/10-create-testing-database.sh'
     healthcheck:
       test:
         - CMD
@@ -47,7 +50,7 @@ services:
 
   phpmyadmin:
     image: phpmyadmin
-    container_name: ia_api_phpmyadmin
+    container_name: laravel_api-phpmyadmin
     depends_on:
       - mysql
     environment:
@@ -60,12 +63,14 @@ services:
     restart: always
 
   redis:
-    image: 'redis:alpine'
-    container_name: ia_api_redis
+    image: 'redis:7-alpine'
+    container_name: laravel_api-redis
+    command: redis-server /usr/local/etc/redis/redis.conf
     ports:
       - '${FORWARD_REDIS_PORT:-6379}:6379'
     volumes:
       - 'redis:/data'
+      - './docker/${APP_ENV:-local}/redis.conf:/usr/local/etc/redis/redis.conf:ro'
     healthcheck:
       test:
         - CMD
@@ -73,6 +78,8 @@ services:
         - ping
       retries: 3
       timeout: 5s
+      interval: 30s
+      start_period: 10s
     restart: always
 
 volumes:

@@ -1,0 +1,40 @@
+# Note: Run `docker build -t php-nodejs:8.3 -f docker/Dockerfile.php-nodejs .` to build the image
+
+# Base Image
+FROM php:8.3-apache AS base
+
+# This helps keep our Dockerfiles DRY -> https://bit.ly/dry-code
+# You can see a list of required extensions for Laravel here: https://laravel.com/docs/11.x/deployment#server-requirements
+
+# Define the build arguments with default values
+ARG PHPIZE_DEPS="libpng-dev libjpeg-dev libfreetype6-dev libzip-dev vim git zip unzip jq libssl-dev libicu-dev wget sudo lsb-release systemctl default-mysql-client nodejs npm supervisor"
+ARG PHP_EXTS="pdo pdo_mysql mysqli zip ftp gd pcntl sockets intl"
+ARG PHP_PECL_EXTS="pcov"
+
+# Set Environment Variables
+ENV PATH="${PATH}:/var/www/html/vendor/bin" \
+    COMPOSER_ALLOW_SUPERUSER=1 \
+    APACHE_DOCUMENT_ROOT=/var/www/html/public
+
+# Combine operations to minimize layers
+RUN a2enmod rewrite && \
+    sed -i "s|/var/www/html|${APACHE_DOCUMENT_ROOT}|g" /etc/apache2/sites-available/000-default.conf && \
+    apt-get update && apt-get install -y --no-install-recommends ${PHPIZE_DEPS} ca-certificates && \
+    docker-php-ext-configure gd --with-freetype --with-jpeg && \
+    docker-php-ext-configure intl && \
+    docker-php-ext-configure ftp --with-openssl-dir=/usr && \
+    docker-php-ext-install -j$(nproc) ${PHP_EXTS} && \
+    pecl install ${PHP_PECL_EXTS} && docker-php-ext-enable ${PHP_PECL_EXTS} && \
+    curl -fsSL https://deb.nodesource.com/setup_current.x | bash - && \
+    npm install -g vite pnpm && \
+    # Clean up
+    npm cache clean --force && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Install Composer (PHP package manager)
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+RUN echo "pcov.enabled=1" >> /usr/local/etc/php/conf.d/pcov.ini && \
+    echo "pcov.directory=/var/www/html" >> /usr/local/etc/php/conf.d/pcov.ini
+
+WORKDIR /var/www/html/
