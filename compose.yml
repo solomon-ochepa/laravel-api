@@ -47,20 +47,8 @@ services:
       retries: 3
       timeout: 5s
     restart: always
-
-  phpmyadmin:
-    image: phpmyadmin
-    container_name: laravel_api-phpmyadmin
-    depends_on:
-      - mysql
-    environment:
-      PMA_HOST: mysql
-      PMA_PORT: 3306
-      PMA_ARBITRARY: 1
-      UPLOAD_LIMIT: 256M
-    ports:
-      - '${PHPMYADMIN_PORT:-8080}:80'
-    restart: always
+    networks:
+      - shared_network
 
   redis:
     image: 'redis:7-alpine'
@@ -85,3 +73,7 @@ services:
 volumes:
   mysql:
   redis:
+
+networks:
+  shared_network:
+    external: true
