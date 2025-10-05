@@ -21,6 +21,8 @@ services:
       - mysql
       - redis
     restart: always
+    networks:
+      - shared_network
 
   mysql:
     image: mysql:8.0
