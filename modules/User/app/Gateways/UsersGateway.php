@@ -19,33 +19,35 @@ class UsersGateway
 
     public function __construct()
     {
+        $this->api_uri = config('services.users.api_uri');
         $this->client_id = config('services.users.client_id');
         $this->client_secret = config('services.users.client_secret');
-        $this->api_uri = config('services.users.api_uri');
         $this->auth_uri = config('services.users.auth_uri');
     }
 
     /**
      * Get the user profile from the auth server.
      */
-    public function user(): array
+    public static function user(): array
     {
+        $service = config('services.users');
+
         try {
             // return $this->get('user')->json();
-            $response = Http::withToken(session('access_token'))->get("{$this->api_uri}/user");
+            $response = Http::withToken(session('access_token'))->get("{$service['api_uri']}/user");
 
             return $response->json();
         } catch (\Throwable $th) {
-            Log::error('Could not retrieve user profile', ['response' => $th->getMessage()]);
+            Log::error('Could not retrieve user profile.', ['response' => $th->getMessage()]);
 
             return [
-                'status' => 'error',
-                'message' => 'Could not retrieve user profile',
+                'status' => 'fail',
+                'message' => 'Could not retrieve user profile.',
             ];
         }
     }
 
-    public function get(string $endpoint, array $query = [])
+    public function get(string $endpoint)
     {
         return Http::withToken(session('access_token'))->get("{$this->api_uri}/{$endpoint}");
     }
@@ -82,7 +84,7 @@ class UsersGateway
                 ]);
 
                 return [
-                    'status' => 'fail',
+                    'status' => 'error',
                     'message' => __('The user was synced, but the data was not modified.'),
                 ];
             }
@@ -92,47 +94,13 @@ class UsersGateway
                 'data' => $response->json('data'),
             ];
         } catch (Exception $e) {
-            Log::error('User could not be sync', [
-                'user_id' => $user->id,
-                'message' => $e->getMessage(),
-                'user' => $user->getDirty(),
-                'response' => $response->json() ?? null, // Avoid null pointer exception
+            Log::error('User could not be sync: '.$e->getMessage(), [
                 'exception' => $e,
             ]);
 
             return [
                 'status' => 'error',
                 'message' => __('Could not sync user.'),
-            ];
-        }
-    }
-
-    protected function accessToken(): string|array
-    {
-        try {
-            $response = Http::asForm()
-                ->timeout(5)
-                ->retry(2, 100)
-                ->post("{$this->auth_uri}/token", [
-                    'grant_type' => 'client_credentials',
-                    'client_id' => $this->client_id,
-                    'client_secret' => $this->client_secret,
-                    'scope' => '',
-                ]);
-
-            return [
-                'status' => 'success',
-                'data' => $response->json(),
-            ];
-        } catch (Exception $e) {
-            Log::error('Failed to get access token from server.', [
-                'message' => $e->getMessage(),
-                'exception' => $e,
-            ]);
-
-            return [
-                'status' => 'error',
-                'message' => __('Failed to get access token from server.'),
             ];
         }
     }

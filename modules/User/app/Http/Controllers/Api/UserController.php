@@ -3,6 +3,7 @@
 namespace Modules\User\App\Http\Controllers\Api;
 
 use App\Helpers\JSend;
+use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -11,9 +12,9 @@ use Illuminate\Support\Facades\Log;
 use Modules\User\App\Http\Requests\CreateUserRequest;
 use Modules\User\App\Http\Requests\UpdateUserRequest;
 use Modules\User\App\Models\User;
-use Modules\User\App\Repositories\UserRepository;
 use Modules\User\App\Resources\UserCollection;
 use Modules\User\App\Resources\UserResource;
+use Modules\User\App\Services\UserService;
 use Throwable;
 
 class UserController extends Controller
@@ -59,7 +60,7 @@ class UserController extends Controller
     public function show(mixed $id): JsonResponse
     {
         try {
-            $user = (new UserRepository)->find($id);
+            $user = UserService::find($id);
 
             return JSend::success(['user' => new UserResource($user)]);
         } catch (ModelNotFoundException $e) {
@@ -80,7 +81,7 @@ class UserController extends Controller
     public function update(UpdateUserRequest $request, mixed $id): JsonResponse
     {
         try {
-            $user = (new UserRepository)->find($id);
+            $user = UserService::find($id);
             $user->fill($request->validated());
 
             // Update the user
@@ -105,7 +106,7 @@ class UserController extends Controller
     public function destroy(string $id): JsonResponse
     {
         try {
-            $user = (new UserRepository)->find($id);
+            $user = UserService::find($id);
             $user->delete();
 
             return JSend::success(['message' => 'User deleted successfully']);

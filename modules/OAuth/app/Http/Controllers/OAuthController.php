@@ -101,7 +101,7 @@ class OAuthController extends Controller
     protected function store()
     {
         // Get user profile
-        $request = (new UsersGateway)->user();
+        $request = UsersGateway::user();
         if ($request['status'] === 'error') {
             return redirect(route('oauth.redirect'))->with('error', 'Login failed: '.$request['message']);
         }
