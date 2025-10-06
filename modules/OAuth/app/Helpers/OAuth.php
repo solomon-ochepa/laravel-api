@@ -26,21 +26,11 @@ class OAuth
                 return $response->json();
             }
 
-            $service = config('services.users');
-
-            $response = Http::asForm()
-                ->timeout(5)
-                ->retry(2, 100)
-                ->post("{$service['auth_uri']}/token", [
-                    'grant_type' => 'client_credentials',
-                    'client_id' => $service['client_id'],
-                    'client_secret' => $service['client_secret'] ?? '',
-                    'scope' => '',
-                ]);
+            $response = self::token($token);
 
             return [
                 'status' => 'success',
-                'data' => $response->json(),
+                'data' => $response, // ->json(),
             ];
         } catch (\Throwable $th) {
             Log::error('Could not authenticate user.', [
@@ -61,19 +51,51 @@ class OAuth
     public static function token(?string $token = null): ?array
     {
         try {
-            $auth = self::check($token);
+            $service = config('services.users');
 
-            return ($auth['status'] == 'success') ? $auth['data']['access_token]'] : null;
+            $response = Http::asForm()
+                ->timeout(5)
+                ->retry(2, 100)
+                ->post("{$service['auth_uri']}/token", self::credentials());
+
+            if (! $response->successful()) {
+                Log::error('Token request failed', [
+                    'status_code' => $response->status(),
+                    'response' => $response->body(),
+                ]);
+
+                return [
+                    'status' => 'error',
+                    'message' => __('Token request failed'),
+                ];
+            }
+
+            return [
+                'status' => 'success',
+                'data' => $response->json(),
+            ];
         } catch (Exception $e) {
-            Log::error('Failed to get access token from server.', [
+            Log::error('Token request failed', [
                 'message' => $e->getMessage(),
                 'exception' => $e,
             ]);
 
             return [
                 'status' => 'error',
-                'message' => __('Failed to get access token from server.'),
+                'message' => __('Token request failed'),
             ];
         }
+    }
+
+    private static function credentials(): array
+    {
+        $service = config('services.users');
+
+        return [
+            'grant_type' => 'client_credentials',
+            'client_id' => $service['client_id'],
+            'client_secret' => $service['client_secret'] ?? '',
+            'scope' => '',
+        ];
     }
 }
