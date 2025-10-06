@@ -7,7 +7,7 @@ use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
-use Modules\User\App\Gateways\UsersGateway;
+use Modules\OAuth\App\Helpers\OAuth;
 use Modules\User\App\Models\User;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -35,7 +35,7 @@ class ValidateToken
 
             if (! $response) {
                 // Validate token with Users service
-                $response = UsersGateway::token($token);
+                $response = OAuth::check($token);
 
                 // Cache valid tokens for 5 minutes to reduce Users service calls
                 if ($response['status'] == 'success') {
