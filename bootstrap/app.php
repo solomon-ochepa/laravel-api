@@ -3,6 +3,7 @@
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Modules\OAuth\App\Http\Middleware\ValidateToken;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -22,6 +23,11 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->validateCsrfTokens(except: [
             'oauth/token',
         ]);
+        $middleware->api(
+            prepend: [
+                ValidateToken::class,
+            ]
+        );
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
