@@ -4,5 +4,8 @@ namespace $NAMESPACE$;
 
 class $CLASS$
 {
-    public function __invoke() {}
+    public function __invoke()
+    {
+        //
+    }
 }

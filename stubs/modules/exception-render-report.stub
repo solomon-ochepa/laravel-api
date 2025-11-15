@@ -11,10 +11,16 @@ class $CLASS$ extends Exception
     /**
      * Report the exception.
      */
-    public function report(): void {}
+    public function report(): void
+    {
+        //
+    }
 
     /**
      * Render the exception as an HTTP response.
      */
-    public function render(Request $request): Response {}
+    public function render(Request $request): Response
+    {
+        //
+    }
 }

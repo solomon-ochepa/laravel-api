@@ -4,5 +4,8 @@ namespace $CLASS_NAMESPACE$;
 
 class $CLASS$
 {
-    public function handle() {}
+    public function handle()
+    {
+        //
+    }
 }
