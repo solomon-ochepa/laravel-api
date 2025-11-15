@@ -1,6 +1,8 @@
 #!/bin/bash
 set -e
 
+cd /var/www/html
+
 echo "Starting Laravel application setup..."
 
 # Check if .env exists, if not create from appropriate environment file
