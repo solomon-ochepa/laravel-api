@@ -1,10 +1,13 @@
 #!/bin/bash
 set -e
 
+cd /var/www/html
+
 echo "Starting Laravel application setup..."
 
 # Check if .env exists, if not create from appropriate environment file
 if [ ! -f .env ]; then
+    echo ".env does not exist. Creating it..."
     if [ "$APP_ENV" = "local-dev" ] && [ -f .env.dev ]; then
         cp .env.dev .env
         echo "Copied .env.dev to .env"
@@ -19,8 +22,10 @@ fi
 
 # Generate application key if not already set
 if [ -f .env ] && ! grep -q "^APP_KEY=.\+" .env; then
-    php artisan key:generate --force
-    echo "Generated application key"
+    echo "Generating app key..."
+    sed -i "s/^APP_KEY=.*/APP_KEY=base64:$(openssl rand -base64 32)/" .env
+    # php artisan key:generate --force
+    echo "App key Generated"
 fi
 
 # Create storage link
