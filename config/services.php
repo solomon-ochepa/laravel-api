@@ -15,11 +15,11 @@ return [
     */
 
     'postmark' => [
-        'token' => env('POSTMARK_TOKEN'),
+        'key' => env('POSTMARK_API_KEY'),
     ],
 
     'resend' => [
-        'key' => env('RESEND_KEY'),
+        'key' => env('RESEND_API_KEY'),
     ],
 
     'ses' => [
@@ -36,11 +36,11 @@ return [
     ],
 
     'users' => [
-        'client_id' => env('USERS_CLIENT_ID'),
-        'client_secret' => env('USERS_CLIENT_SECRET'),
-        'api_uri' => env('USERS_API_URI'),
-        'auth_uri' => env('USERS_AUTH_URI'),
-        'callback_uri' => env('USERS_CALLBACK_URI'),
+        'client_id' => env('AUTH_CLIENT_ID'),
+        'client_secret' => env('AUTH_CLIENT_SECRET'),
+        'api_uri' => env('AUTH_API_URI'),
+        'auth_uri' => env('AUTH_OAUTH_URI'),
+        'callback_uri' => env('AUTH_CALLBACK_URI'),
     ],
 
 ];
