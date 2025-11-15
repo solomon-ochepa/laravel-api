@@ -1,5 +1,3 @@
-# Note: Run `docker build -t mburton3969/php-nodejs:8.3 -f docker/Dockerfile.php-nodejs .` to build the base image
-
 # -----------------------------
 # Stage 1: Node build
 # -----------------------------

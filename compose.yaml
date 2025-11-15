@@ -5,8 +5,8 @@ services:
       dockerfile: docker/Dockerfile.local
       args:
         WWWGROUP: '${WWWGROUP:-1000}'
-    image: laravel_api
-    container_name: laravel_api-laravel.test
+    image: laravel-api
+    container_name: laravel-api-laravel.test
     extra_hosts:
       - 'host.docker.internal:host-gateway'
       - 'localhost.test:host-gateway'
@@ -22,12 +22,12 @@ services:
       - redis
     restart: always
     networks:
-      - shared_network
+      - shared
 
   mysql:
     image: mysql:8.0
     command: --skip-log-bin
-    container_name: laravel_api-mysql
+    container_name: laravel-api-mysql
     ports:
       - '${FORWARD_DB_PORT:-3306}:3306'
     environment:
@@ -50,11 +50,11 @@ services:
       timeout: 5s
     restart: always
     networks:
-      - shared_network
+      - shared
 
   redis:
     image: 'redis:7-alpine'
-    container_name: laravel_api-redis
+    container_name: laravel-api-redis
     command: redis-server /usr/local/etc/redis/redis.conf
     ports:
       - '${FORWARD_REDIS_PORT:-6379}:6379'
@@ -71,11 +71,13 @@ services:
       interval: 30s
       start_period: 10s
     restart: always
+    networks:
+      - shared
 
 volumes:
   mysql:
   redis:
 
 networks:
-  shared_network:
+  shared:
     external: true
