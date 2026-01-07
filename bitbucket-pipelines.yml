@@ -15,7 +15,7 @@ pipelines:
                 # Build
                 - echo "$ENCRYPTED_DEV_ENV_FILE" | base64 -d > .env
                 - source .env # Ensure the updated .env file is sourced
-                - docker build -f docker/Dockerfile -t laravel_api:test --build-arg APP_ENV=dev .
+                - docker build -f docker/Dockerfile -t laravel_api:test --build-arg APP_ENV=test .
                 # Command(s)
                 # Run Pint
                 - docker run --rm laravel_api:test pint --test
