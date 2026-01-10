@@ -1,12 +1,12 @@
 services:
-  laravel.test:
+  app:
     build:
       context: .
       dockerfile: docker/Dockerfile.local
       args:
         WWWGROUP: '${WWWGROUP:-1000}'
     image: laravel-api
-    container_name: laravel-api-laravel.test
+    container_name: laravel-api-app
     extra_hosts:
       - 'host.docker.internal:host-gateway'
       - 'localhost.test:host-gateway'

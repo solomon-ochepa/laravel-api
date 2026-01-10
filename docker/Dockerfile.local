@@ -5,6 +5,9 @@ FROM php-nodejs:8.3 AS node-builder
 
 ARG APP_ENV="local"
 
+# Increase PHP memory for CLI (required for Pest + parallel)
+RUN echo "memory_limit=1G" > /usr/local/etc/php/conf.d/memory-limit.ini
+
 # Install Node dependencies (cached by package.json + lockfile)
 COPY --chown=www-data:www-data package.json pnpm-lock.yaml* ./
 RUN set -eux; \
